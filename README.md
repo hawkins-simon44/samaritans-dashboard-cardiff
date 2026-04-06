@@ -1,13 +1,10 @@
-# samaritans-dashboard
+# samaritans-dashboard-cardiff
 
 A status dashboard for [Samaritans](https://www.samaritans.org/) branches utilising [Three Rings](https://www.threerings.org.uk/). It allows authorised users to post messages for others (via the 3R wiki), shows today's shifts, events for the coming week and status of inbound communications channels. It can be easily customised with a basic understanding of HTML, CSS and Javascript.
 
-Predominantly designed for use on large screen TVs, there are two display modes which are selected automatically based on the screen size. It is strongly recommended to be utilised on 4K TVs for the additional screen real-estate:
+Predominantly designed for use on large screen TVs, there are two display modes which are selected automatically based on the screen size.
 
-![4k (3840x2160) Screen](https://raw.githubusercontent.com/richardseabrook/samaritans-dashboard/master/README_img/4k.jpg "4k")
-![1080p (1920x1080) Screen](https://raw.githubusercontent.com/richardseabrook/samaritans-dashboard/master/README_img/1080p.jpg "1080p")
-
-This was written for [Sevenoaks Samaritans](https://www.samaritans.org/sevenoaks/), but is now utilised in a number of branches.
+This was written for [Sevenoaks Samaritans](https://www.samaritans.org/sevenoaks/), although this fork has been created to provide specific functionality for the [Cardiff and District](https://www.samaritans.org/branches/cardiff/) branch.
 
 ## Usage
 
@@ -19,23 +16,21 @@ The SCO dashboard provides realtime queue statistics for each contact method, wh
 
 ## Equipment
 
-In our branch, we used:
+Minimum equipment required:
 
-1 x 4k TV (donated)
+1 x HDMI display (usually a flatscreen TV or similar)
 
-1 x 1080p Monitor (donated)
+1 x [Raspberry Pi 4 Model B - 2GB](https://thepihut.com/products/raspberry-pi-4-model-b?variant=20064052674622)
 
-2 x [Raspberry Pi 4 Model B - 2GB](https://thepihut.com/products/raspberry-pi-4-model-b?variant=20064052674622)
+1 x [FLIRC Raspberry Pi 4 Case](https://thepihut.com/products/flirc-raspberry-pi-4-case?variant=20649168404542)
 
-2 x [FLIRC Raspberry Pi 4 Case](https://thepihut.com/products/flirc-raspberry-pi-4-case?variant=20649168404542)
+1 x ['NOOBS' Preinstalled Micro SD Card (Latest v3.4.0) - 16GB](https://thepihut.com/products/noobs-preinstalled-sd-card?variant=30582045905)
 
-2 x ['NOOBS' Preinstalled Micro SD Card (Latest v3.4.0) - 16GB](https://thepihut.com/products/noobs-preinstalled-sd-card?variant=30582045905)
+1 x [Official UK Raspberry Pi 4 Power Supply (5.1V 3A) - White](https://thepihut.com/products/raspberry-pi-psu-uk?variant=20064004505662)
 
-2 x [Official UK Raspberry Pi 4 Power Supply (5.1V 3A) - White](https://thepihut.com/products/raspberry-pi-psu-uk?variant=20064004505662)
+1 x [Official Raspberry Pi 4 Micro-HDMI Cable - 1M / White](https://thepihut.com/products/micro-hdmi-to-standard-hdmi-a-cable?variant=31597424934974)
 
-2 x [Official Raspberry Pi 4 Micro-HDMI Cable - 1M / White](https://thepihut.com/products/micro-hdmi-to-standard-hdmi-a-cable?variant=31597424934974)
-
-+ ~~There is one more Raspberry Pi than the number of screens.~~ (Since v2.0.0 there is no need of an additional Pi to run as a server.)
+(Since v2.0.0 there is no need of an additional Pi to run as a server.)
 * Use a good quality metal case, so that heat can be dissipated adequately.
 
 > [!CAUTION]
@@ -58,7 +53,7 @@ In our branch, we used:
 * Sign up for a [balenaCloud](https://www.balena.io/) account, which is free for up to 10 devices.
 * Click the following button:
 
-[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/richardseabrook/samaritans-dashboard)
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/hawkins-simon44/samaritans-dashboard-cardiff)
 
 * Ensure the default device type matches the type of Pi you are using for your project. You must run 64bit OS (the only option for Pi 4 onwards).
 * Click the **Advanced** toggle switch.
@@ -84,18 +79,6 @@ Now let's set up each device:
 You may also want to manually set your resolution if you see the low-resolution version (square queue statistic boxes, rather than circles and no event information) when you have a 4K resolution or higher display.
 
 If you see the logo boot screen for a very long period, check balenaCloud - especially that the device is shown in the fleet (if not, check network) and shows progress downloading images. Also check there are no warnings about incorrect voltage (incorrect power supply).
-
-## Upgrading
-
-If you are an existing user, there are a few benefits to upgrade - better support for newer displays and devices, no need to edit the HTML to replace your branch name (now done via configuration variable) and no need to have one more Pi than displays. All components now run together on each device. Deployment is now _much_ simplified.
-
-Due to the major changes involved, the recommended upgrade path is:
-
-* Retrieve the *THREERINGS_APIKEY* value from your current *nginx* fleet and any *WINDOW_SIZE* from *balena-dash* fleet devices. You may not need to set *WINDOW_SIZE* with the new version if auto-detect works as expected.
-* Follow the [Deployment](#deployment) section above to create a new single fleet.
-* Either write new SD cards for each device (preferable since you will probably also upgrade the host operating system) or move each device into the new fleet using the device's **Settings** page.
-* Apply manual *WINDOW_SIZE* device variable using previous value only if required.
-* You can then delete the redundant *nginx* and *balena-dash* fleets using their **Settings** page.
 
 ## Customisation
 
