@@ -110,13 +110,6 @@
                 </div>
                 <div class="uk-width-1-3 uk-width-1-4@2xl" style="height: calc(100vh - 100px)">
                     <div class="uk-child-width-1-1" style="padding-top: 20px" uk-grid="masonry: true">
-						<div v-if="!docLoading">
-                            <div class="uk-card uk-card-body uk-light" style="background: #72619f">
-                                <span class="connectors"></span>
-                                <h1 class="uk-card-title uk-margin-remove-top">Director On Call</h1>
-                                <h2 class="uk-h3 uk-margin-remove" >{{ directorOnCall }}</h2>
-                            </div>
-                        </div>
                         <div v-if="!shiftsLoading">
                             <div class="uk-card uk-card-body uk-light" style="background: #72619f">
                                 <span class="connectors"></span>
@@ -176,9 +169,7 @@
                   messages: {},
                   shiftsLoading: true,
                   shiftsError: null,
-                  shifts: {},
-				  docLoading: true,
-				  directorOnCall: null
+                  shifts: {}
                 }
               },
               created() {
@@ -190,7 +181,6 @@
                   this.fetchEvents();
                   this.fetchMessages();
                   this.fetchShifts();
-				  this.findDoc();
                   document.getElementById('status').src = '/embed/status/';
                 },
                 async fetchEvents() {
@@ -232,7 +222,7 @@
 					//Prison & Prison Leader: Shift time isn't correct, fudged to fit on 3rings rota properly
 					//DoC & Gap Filler: Only appear on Monday/Tuesday respectively, no point putting on a daily list. Might add as a separate section later on.
 					for (let i = 0; i < shifts.length; i++) {
-						let rota = shifts[i].rota;
+						rota = shifts[i].rota;
 						if (rota == 'Cardiff Prison' || rota == 'Prison Leader' || rota == 'Director on Call'|| rota == 'Gap Filler') {
 							shifts.splice(i, 1);
 							i--;
@@ -246,26 +236,6 @@
                     this.shiftsError = "Unable to access shifts data feed.";
                   }
                 },
-				async findDoc() {
-					try {
-						let doc = 'not found';
-						const datetime = new Date();
-						const endDate = moment(datetime).format('YYYY-MM-DD');
-						const startDate = moment(datetime).subtract(7, 'd').format('YYYY-MM-DD');
-						const queryString = '?start_date=' + startDate + '&end_date=' + endDate;
-						const response = await fetch('/stats/export_rotas.json' + queryString);
-						shifts = json['shifts'];
-						for (let i = 0; i < shifts.length; i++){
-							if (shifts[i].rota == 'Director on Call'){
-								doc = shifts[i].volunteers[0].name;
-							}
-						}
-						if (doc != ''){
-							this.directorOnCall = doc;
-							this.docLoading = false;
-						}
-					}
-				},
                 formatDate(datetime = new Date()) {
                   return moment(datetime).format('dddd[, ]MMMM Do YYYY')
                 },
