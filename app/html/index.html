@@ -120,9 +120,7 @@
                                         {{ formatTime(shift.start_datetime) }} to {{ formatTime(endTime(shift.start_datetime, shift.duration)) }}
                                     </h2>
                                     <div>
-                                        <em>({{ shift.rota }}
-										<template v-if="shift.title !== ''"> - {{ shift.title }}</template>
-										)</em>
+                                        <em>({{ shift.rota }}<template v-if="shift.title !== ''"> - {{ shift.title }}</template>)</em>
                                         <template v-for="(volunteer, index) in shift.volunteers" :key="volunteer.id">
                                             <template v-if="index > 0">,</template>
                                             {{ volunteer.name }}
