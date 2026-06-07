@@ -110,17 +110,15 @@
 				</div>
 				<div class="uk-width-1-3 uk-width-1-4@2xl" style="height: calc(100vh - 100px)">
 					<div class="uk-child-width-1-1" style="padding-top: 20px" uk-grid="masonry: true">
-						<div class="uk-child-width-1-2" style="padding-top: 20px" uk-grid="masonry: true">
+						<div class="uk-child-width-1-2@s uk-grid-match uk-grid-small" uk-grid>
 							<div v-if="!docLoading">
 								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
-									<span class="connectors"></span>
 									<p class="uk-card-title uk-margin-remove">Director on Call:</p>
 									<p class="uk-card-title uk-margin-remove">{{ directorOnCall }}</p>
 								</div>
 							</div>
 							<div v-if="!shiftsLoading">
 								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
-									<span class="connectors"></span>
 									<p class="uk-card-title uk-margin-remove">Current Leader:</p>
 									<p class="uk-card-title uk-margin-remove">{{ currentLeader }}</p>
 								</div>
@@ -263,17 +261,18 @@
 									i--;
 								}
 							}
+							//console.log("Entering current Leader Search:");
 							//Iterate again, with the aim of finding the current leader
-							const now = new Date();
+							const now = moment();
 							let currentLeader = null;
 							for (const shift of shifts) {
 								//Only consider leader shifts
-								if (shift.rota !== "leader") continue;
+								if (shift.rota !== "Leader") continue;
 								//Calculate the end time from the start + duration
-								const start = new Date(shift.start_datetime);
-								const end = new Date(start.getTime() + shift.duration * 1000);
+								const start = moment.parseZone(shift.start_datetime);
+								const end = start.clone().add(shift.duration, 'seconds');
 								//If now is between start & end, it's *probably* the right one...
-								if (!(start <= now && end >= now)) continue;
+								if (!(start.isSameOrBefore(now) && end.isSameOrAfter(now))) continue;
 								//EDGE CASE ALERT: Cardiff Central Outreach leader slot - does this leader shift have a matching outreach shift?
 								const hasMatchingOutreach = shifts.some(other =>
 									other.rota === "Cardiff Central Outreach" &&
@@ -287,7 +286,7 @@
 									const leaderName = shift.volunteers[0].name;
 									const startStr = moment(start).format("HH:mm");
 									const endStr = moment(end).format("HH:mm");
-									this.currentLeader = `${name} (${startStr} - ${endStr})`;
+									this.currentLeader = `${leaderName} (${startStr} - ${endStr})`;
 								}
 								break;
 							}
@@ -301,8 +300,8 @@
 					},
 					async fetchDirector() {
 						try {							
-							const start_date = moment.utc().subtract(7, 'days').format('YYYY-MM-DD');
-							const end_date = moment.utc().format('YYYY-MM-DD');
+							const start_date = moment().subtract(7, 'days').format('YYYY-MM-DD');
+							const end_date = moment().format('YYYY-MM-DD');
 							const response = await fetch(`/stats/export_rotas.json?start_date=${start_date}&end_date=${end_date}`);
 							if (!response.ok)
 							  throw new Error(response.statusText);
