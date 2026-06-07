@@ -1,269 +1,348 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Samaritans Dashboard</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="css/uikit.min.css" />
-        <link rel="stylesheet" href="css/fonts.css" />
-        <script src="js/jquery-3.5.1.min.js"></script>
-        <script src="js/moment.min.js"></script>
-        <script src="js/uikit.min.js"></script>
-        <script src="js/uikit-icons.min.js"></script>
-        <script src="js/vue.global.prod.js"></script>
-        <style>
-            html { font-family: "Varah",Sans-serif; font-size: 16px }
-            .uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6, .uk-heading-2xlarge, .uk-heading-large, .uk-heading-medium, .uk-heading-small, .uk-heading-xlarge, h1, h2, h3, h4, h5, h6 { font-family: "Varah",Sans-serif }
-            .connectors::before { border-radius: 0 3.5px 3.5px 0; width: 20px; height: 7px; top: 38px; left: 0 }
-            .connectors::after { border-radius: 0 0 3.5px 3.5px; width: 7px; height: 20px; top: 0; left: 38px }
-            .connectors::before, .connectors::after { content: ''; position: absolute; background: #f4f7f8 }
-            .embed h1, .embed h2, .embed h3, .embed h4, .embed h5, .embed h6 { font-size: 1.5rem; line-height: 1.4 }
-            .embed h1, .embed h2, .embed h3, .embed h4, .embed h5, .embed h6, .embed p { margin-top: 0 !important; margin-bottom: 0 !important }
-            .embed img { display: none }
-            nav .uk-h3 { font-size: 42px }
+	<head>
+		<title>Samaritans Dashboard</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/uikit.min.css" />
+		<link rel="stylesheet" href="css/fonts.css" />
+		<script src="js/jquery-3.5.1.min.js"></script>
+		<script src="js/moment.min.js"></script>
+		<script src="js/uikit.min.js"></script>
+		<script src="js/uikit-icons.min.js"></script>
+		<script src="js/vue.global.prod.js"></script>
+		<style>
+			html { font-family: "Varah",Sans-serif; font-size: 16px }
+			.uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6, .uk-heading-2xlarge, .uk-heading-large, .uk-heading-medium, .uk-heading-small, .uk-heading-xlarge, h1, h2, h3, h4, h5, h6 { font-family: "Varah",Sans-serif }
+			.connectors::before { border-radius: 0 3.5px 3.5px 0; width: 20px; height: 7px; top: 38px; left: 0 }
+			.connectors::after { border-radius: 0 0 3.5px 3.5px; width: 7px; height: 20px; top: 0; left: 38px }
+			.connectors::before, .connectors::after { content: ''; position: absolute; background: #f4f7f8 }
+			.embed h1, .embed h2, .embed h3, .embed h4, .embed h5, .embed h6 { font-size: 1.5rem; line-height: 1.4 }
+			.embed h1, .embed h2, .embed h3, .embed h4, .embed h5, .embed h6, .embed p { margin-top: 0 !important; margin-bottom: 0 !important }
+			.embed img { display: none }
+			nav .uk-h3 { font-size: 42px }
 
-            .uk-breakpoint-2xl::before {
-              content: '3800px';
-            }
-            :root {
-              --uk-breakpoint-2xl: 3800px;
-            }
-            @media (min-width: 3800px) {
-              .uk-width-1-5\@2xl {
-                width: 20%;
-              }
-              .uk-width-4-5\@2xl {
-                width: 80%;
-              }
-              .uk-width-1-4\@2xl {
-                width: 25%;
-              }
-              .uk-width-3-4\@2xl {
-                width: 75%;
-              }
-              .uk-child-width-1-3\@2xl > * {
-                width: calc(100% * 1 / 3.001);
-              }
-              html {
-                font-size: 28px;
-              }
-              .embed img {
-                display: unset;
-              }
-            }
-            @media (max-width: 3799px) {
-              .uk-visible\@2xl {
-                display: none !important;
-              }
-            }
-        </style>
-    </head>
-    <body>
-        <nav class="uk-navbar-container uk-navbar-transparent" style="height: 100px" uk-navbar>
-            <div class="uk-navbar-left">
-                <img src="img/logo.png" class="uk-navbar-item uk-logo">
-            </div>
-            <div class="uk-navbar-right uk-navbar-item">
-              <h1 class="uk-h3 uk-margin-remove-bottom" style="color: #045">Welcome to <span class="uk-text-bold"><!--#echo var="ENV_SITE_NAME" --></span></h1>
-              <img src="img/arrows.png">
-            </div>
-        </nav>
-        <div style="background: #f4f7f8" uk-grid>
-            <div class="uk-width-5-6 uk-width-4-5@2xl" id="app" uk-grid>
-                <div class="uk-width-2-3 uk-width-3-4@2xl" style="height: calc(100vh - 100px)">
-                    <div v-if="eventsError || messagesError || shiftsError" class="uk-alert-danger" uk-alert>
-                        <div v-if="eventsError" class="uk-grid-small" uk-grid>
-                            <div><span uk-icon="icon: warning"></span></div>
-                            <div><p>{{ eventsError }}</p></div>
-                        </div>
-                        <div v-if="messagesError" class="uk-grid-small" uk-grid>
-                            <div><span uk-icon="icon: warning"></span></div>
-                            <div><p>{{ messagesError }}</p></div>
-                        </div>
-                        <div v-if="shiftsError" class="uk-grid-small" uk-grid>
-                            <div><span uk-icon="icon: warning"></span></div>
-                            <div><p>{{ shiftsError }}</p></div>
-                        </div>
-                    </div>
-                    <div class="uk-child-width-1-2 uk-child-width-1-3@2xl" style="padding-left: 15px; padding-top: 20px" uk-grid="masonry: true">
-                        <!-- Currently not showing events
+			.uk-breakpoint-2xl::before {
+			  content: '3800px';
+			}
+			:root {
+			  --uk-breakpoint-2xl: 3800px;
+			}
+			@media (min-width: 3800px) {
+			  .uk-width-1-5\@2xl {
+				width: 20%;
+			  }
+			  .uk-width-4-5\@2xl {
+				width: 80%;
+			  }
+			  .uk-width-1-4\@2xl {
+				width: 25%;
+			  }
+			  .uk-width-3-4\@2xl {
+				width: 75%;
+			  }
+			  .uk-child-width-1-3\@2xl > * {
+				width: calc(100% * 1 / 3.001);
+			  }
+			  html {
+				font-size: 28px;
+			  }
+			  .embed img {
+				display: unset;
+			  }
+			}
+			@media (max-width: 3799px) {
+			  .uk-visible\@2xl {
+				display: none !important;
+			  }
+			}
+		</style>
+	</head>
+	<body>
+		<nav class="uk-navbar-container uk-navbar-transparent" style="height: 100px" uk-navbar>
+			<div class="uk-navbar-left">
+				<img src="img/logo.png" class="uk-navbar-item uk-logo">
+			</div>
+			<div class="uk-navbar-right uk-navbar-item">
+				<h1 class="uk-h3 uk-margin-remove-bottom" style="color: #045">Welcome to <span class="uk-text-bold"><!--#echo var="ENV_SITE_NAME" --></span></h1>
+				<img src="img/arrows.png">
+			</div>
+		</nav>
+		<div style="background: #f4f7f8" uk-grid>
+			<div class="uk-width-5-6 uk-width-4-5@2xl" id="app" uk-grid>
+				<div class="uk-width-2-3 uk-width-3-4@2xl" style="height: calc(100vh - 100px)">
+					<div v-if="eventsError || messagesError || shiftsError" class="uk-alert-danger" uk-alert>
+						<div v-if="eventsError" class="uk-grid-small" uk-grid>
+							<div><span uk-icon="icon: warning"></span></div>
+							<div><p>{{ eventsError }}</p></div>
+						</div>
+						<div v-if="messagesError" class="uk-grid-small" uk-grid>
+							<div><span uk-icon="icon: warning"></span></div>
+							<div><p>{{ messagesError }}</p></div>
+						</div>
+						<div v-if="shiftsError" class="uk-grid-small" uk-grid>
+							<div><span uk-icon="icon: warning"></span></div>
+							<div><p>{{ shiftsError }}</p></div>
+						</div>
+					</div>
+					<div class="uk-child-width-1-2 uk-child-width-1-3@2xl" style="padding-left: 15px; padding-top: 20px" uk-grid="masonry: true">
+						<!-- Currently not showing events
 						<template v-for="(event, index) in events" :key="event.id">
-                            <div v-if="index < 12" class="uk-visible@2xl">
-                                <div class="uk-card uk-card-body uk-light" style="background: #009bc8">
-                                    <span class="connectors"></span>
-                                    <p class="uk-text-meta uk-margin-remove">{{ formatDate(event.date) }}</p>
-                                    <h1 class="uk-card-title uk-margin-remove-top">{{ event.name }}</h1>
-                                </div>
-                            </div>
-                        </template>
+							<div v-if="index < 12" class="uk-visible@2xl">
+								<div class="uk-card uk-card-body uk-light" style="background: #009bc8">
+									<span class="connectors"></span>
+									<p class="uk-text-meta uk-margin-remove">{{ formatDate(event.date) }}</p>
+									<h1 class="uk-card-title uk-margin-remove-top">{{ event.name }}</h1>
+								</div>
+							</div>
+						</template>
 						-->
-                        <template v-for="message in messages" :key="message.id">
-                            <div>
+						<template v-for="message in messages" :key="message.id">
+							<div>
 								<!-- Only show wiki entries that were created after the two 'template' entries -->
-                                <div v-if="message.id > 9207" class="uk-card uk-card-body uk-light" style="background: #045">
-                                    <span class="connectors"></span>
-                                    <div class="embed" v-html="message.contents"></div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-                <div class="uk-width-1-3 uk-width-1-4@2xl" style="height: calc(100vh - 100px)">
-                    <div class="uk-child-width-1-1" style="padding-top: 20px" uk-grid="masonry: true">
-                        <div v-if="!shiftsLoading">
-                            <div class="uk-card uk-card-body uk-light" style="background: #72619f">
-                                <span class="connectors"></span>
-                                <p class="uk-card-title uk-margin-remove">{{ formatDate() }}</p>
-                                <h1 class="uk-card-title uk-margin-remove-top">Today's Shifts</h1>
-                                <template v-for="(shift, index) in shifts" :key="shift.id">
-                                    <h2 class="uk-h3 uk-margin-remove" v-if="index == 0 || shift.start_datetime != shifts[index -1].start_datetime || shift.duration != shifts[index -1].duration">
-                                        {{ formatTime(shift.start_datetime) }} to {{ formatTime(endTime(shift.start_datetime, shift.duration)) }}
-                                    </h2>
-                                    <div>
-                                        <em>({{ shift.rota }}<template v-if="shift.title !== ''"> - {{ shift.title }}</template>)</em>
-                                        <template v-for="(volunteer, index) in shift.volunteers" :key="volunteer.id">
-                                            <template v-if="index > 0">,</template>
-                                            {{ volunteer.name }}
-                                        </template>
-                                    </div>
-                                </template>
-                                <p v-if="!shifts.length">There are no shifts scheduled for today.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="uk-width-1-6 uk-width-1-5@2xl" style="height: calc(100vh - 100px); overflow: hidden">
-                <iframe class="uk-width-1-1" id="status" scrolling="no" src="/embed/status/" style="height: calc(100vh - 100px)"></iframe>
-            </div>
-        </div>
-        <script>
-            $('#status').on("load", function() {
-              $(this).contents().find( "body.embed" ).css( "border", "0" );
-              $(this).contents().find( "body.embed" ).css( "padding", "0" );
-              $(this).contents().find( "head" ).append('<style>body:before, body:after { width: 0 !important }</style>');
-              $(this).contents().find( "main" ).css( "padding", "0" );
+								<div v-if="message.id > 9207" class="uk-card uk-card-body uk-light" style="background: #045">
+									<span class="connectors"></span>
+									<div class="embed" v-html="message.contents"></div>
+								</div>
+							</div>
+						</template>
+					</div>
+				</div>
+				<div class="uk-width-1-3 uk-width-1-4@2xl" style="height: calc(100vh - 100px)">
+					<div class="uk-child-width-1-1" style="padding-top: 20px" uk-grid="masonry: true">
+						<div class="uk-child-width-1-2" style="padding-top: 20px" uk-grid="masonry: true">
+							<div v-if="!docLoading">
+								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
+									<span class="connectors"></span>
+									<p class="uk-card-title uk-margin-remove">Director on Call:</p>
+									<p class="uk-card-title uk-margin-remove">{{ directorOnCall }}</p>
+								</div>
+							</div>
+							<div v-if="!shiftsLoading">
+								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
+									<span class="connectors"></span>
+									<p class="uk-card-title uk-margin-remove">Current Leader:</p>
+									<p class="uk-card-title uk-margin-remove">{{ currentLeader }}</p>
+								</div>
+							</div>
+						</div>
+						<div v-if="!shiftsLoading">
+							<div class="uk-card uk-card-body uk-light" style="background: #72619f">
+								<span class="connectors"></span>
+								<p class="uk-card-title uk-margin-remove">{{ formatDate() }}</p>
+								<h1 class="uk-card-title uk-margin-remove-top">Today's Shifts</h1>
+								<template v-for="(shift, index) in shifts" :key="shift.id">
+									<h2 class="uk-h3 uk-margin-remove" v-if="index == 0 || shift.start_datetime != shifts[index -1].start_datetime || shift.duration != shifts[index -1].duration">
+										{{ formatTime(shift.start_datetime) }} to {{ formatTime(endTime(shift.start_datetime, shift.duration)) }}
+									</h2>
+									<div>
+										<em>({{ shift.rota }}<template v-if="shift.title !== ''"> - {{ shift.title }}</template>)</em>
+										<template v-for="(volunteer, index) in shift.volunteers" :key="volunteer.id">
+											<template v-if="index > 0">,</template>
+											{{ volunteer.name }}
+										</template>
+									</div>
+								</template>
+								<p v-if="!shifts.length">There are no shifts scheduled for today.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="uk-width-1-6 uk-width-1-5@2xl" style="height: calc(100vh - 100px); overflow: hidden">
+				<iframe class="uk-width-1-1" id="status" scrolling="no" src="/embed/status/" style="height: calc(100vh - 100px)"></iframe>
+			</div>
+		</div>
+		<script>
+			$('#status').on("load", function() {
+				$(this).contents().find( "body.embed" ).css( "border", "0" );
+				$(this).contents().find( "body.embed" ).css( "padding", "0" );
+				$(this).contents().find( "head" ).append('<style>body:before, body:after { width: 0 !important }</style>');
+				$(this).contents().find( "main" ).css( "padding", "0" );
 
-              $(this).contents().find( "span.waiting__label" ).html( "wait" );
-              $(this).contents().find( "span.queue__label" ).html( "waiting" );
-              $(this).contents().find( "p:not([id]) span.waiting__label" ).hide();
-              $(this).contents().find( ".bubble__tag" ).hide();
+				$(this).contents().find( "span.waiting__label" ).html( "wait" );
+				$(this).contents().find( "span.queue__label" ).html( "waiting" );
+				$(this).contents().find( "p:not([id]) span.waiting__label" ).hide();
+				$(this).contents().find( ".bubble__tag" ).hide();
 
-              if (window.matchMedia("(min-width: 3800px)").matches) {
-                $(this).contents().find( ".page-header__info" ).hide();
-                $(this).contents().find( ".bubble-copy__item p" ).css( "font-size", "30px" );
-                $(this).contents().find( "ul.status-bubbles" ).css( "margin-top", "70%" );
-              } else {
-                $(this).contents().find( ".page-header" ).hide();
-                $(this).contents().find( "ul.status-bubbles" ).css( "margin-top", "24px" );
-              }
-            });
+				if (window.matchMedia("(min-width: 3800px)").matches) {
+					$(this).contents().find( ".page-header__info" ).hide();
+					$(this).contents().find( ".bubble-copy__item p" ).css( "font-size", "30px" );
+					$(this).contents().find( "ul.status-bubbles" ).css( "margin-top", "70%" );
+				} else {
+					$(this).contents().find( ".page-header" ).hide();
+					$(this).contents().find( "ul.status-bubbles" ).css( "margin-top", "24px" );
+				}
+			});
 
-            const refreshIntervalInMinutes = 2;
-            const app = Vue.createApp({
-              data() {
-                return {
-                  eventsError: null,
-                  events: {},
-                  messagesError: null,
-                  messages: {},
-                  shiftsLoading: true,
-                  shiftsError: null,
-                  shifts: {}
-                }
-              },
-              created() {
-                this.fetchData();
-                setInterval(this.fetchData, refreshIntervalInMinutes * 1000 * 60);
-              },
-              methods: {
-                fetchData() {
-				  //Dashboard currently doesn't show events, so removing from the fetchData() method for now to save pointless api calls
-                  //this.fetchEvents();
-                  this.fetchMessages();
-                  this.fetchShifts();
-                  document.getElementById('status').src = '/embed/status/';
-                },
-                async fetchEvents() {
-                  try {
-                    const response = await fetch('/events.json');
-                    if (!response.ok)
-                      throw new Error(response.statusText);
-                    const json = await response.json();
-                    // only show events in the next 7 days
-                    // this.events = json['events']
-                    this.events = json['events'].filter(event => moment(event.date).isBefore(moment().add(7, 'd')))
-                    this.eventsError = null;
-                  } catch (err) {
-                    console.log(err);
-                    this.eventsError = "Unable to access events data feed.";
-                  }
-                },
-                async fetchMessages() {
-                  try {
-                    const response = await fetch('/wiki/branchcommsscreens/all_pages.json');
-                    if (!response.ok)
-                      throw new Error(response.statusText);
-                    const json = await response.json();
-                    this.messages = json
-                    this.messagesError = null;
-                  } catch (err) {
-                    console.log(err);
-                    this.messagesError = "Unable to access messages data feed.";
-                  }
-                },
-                async fetchShifts() {
-                  try {
-                    const response = await fetch('/stats/export_rotas.json');
-                    if (!response.ok)
-                      throw new Error(response.statusText);
-                    const json = await response.json();			
-                    shifts = json['shifts'];
-					//Sort the JSON by time, then put leaders before day/night shift
-					const rolePriority = {
-						"Leader": 1,
-						"Day Shift": 2,
-						"Night Shift": 2
-					};
-					shifts.sort((a, b) => {
-						//First by date/time
-						if (a.start_datetime !== b.start_datetime) {
-							return a.start_datetime.localeCompare(b.start_datetime);
+			const refreshIntervalInMinutes = 2;
+			const app = Vue.createApp({
+				data() {
+					return {
+						eventsError: null,
+						events: {},
+						messagesError: null,
+						messages: {},
+						shiftsLoading: true,
+						shiftsError: null,
+						shifts: {},
+						currentLeader: {},
+						docLoading: true,
+						directorOnCall: {}
+					}
+				},
+				created() {
+					this.fetchData();
+					setInterval(this.fetchData, refreshIntervalInMinutes * 1000 * 60);
+				},
+				methods: {
+					fetchData() {
+						//Dashboard currently doesn't show events, so removing from the fetchData() method for now to save pointless api calls
+						//this.fetchEvents();
+						this.fetchMessages();
+						this.fetchShifts();
+						this.fetchDirector();
+						document.getElementById('status').src = '/embed/status/';
+					},
+					async fetchEvents() {
+						try {
+							const response = await fetch('/events.json');
+							if (!response.ok)
+								throw new Error(response.statusText);
+							const json = await response.json();
+							// only show events in the next 7 days
+							// this.events = json['events']
+							this.events = json['events'].filter(event => moment(event.date).isBefore(moment().add(7, 'd')))
+							this.eventsError = null;
+						} catch (err) {
+							console.log(err);
+							this.eventsError = "Unable to access events data feed.";
 						}
-						//Then by role (the 'rota' field in the JSON)
-						return (rolePriority[a.rota] || 99) - (rolePriority[b.rota] || 99);
-					});
-					//Iterate through shifts and remove any that we don't want to show. Currently limited to:
-					//Prison & Prison Leader: Shift time isn't correct, fudged to fit on 3rings rota properly
-					//DoC & Gap Filler: Only appear on Monday/Tuesday respectively, no point putting on a daily list. Might add as a separate section later on.
-					for (let i = 0; i < shifts.length; i++) {
-						rota = shifts[i].rota;
-						if (rota == 'Cardiff Prison' || rota == 'Prison Leader' || rota == 'Director on Call'|| rota == 'Gap Filler') {
-							shifts.splice(i, 1);
-							i--;
+					},
+					async fetchMessages() {
+						try {
+							const response = await fetch('/wiki/branchcommsscreens/all_pages.json');
+							if (!response.ok)
+								throw new Error(response.statusText);
+							const json = await response.json();
+							this.messages = json
+							this.messagesError = null;
+						} catch (err) {
+							console.log(err);
+							this.messagesError = "Unable to access messages data feed.";
 						}
-					}			
-					this.shifts = json['shifts']
-                    this.shiftsError = null;
-                    this.shiftsLoading = false;
-                  } catch (err) {
-                    console.log(err);
-                    this.shiftsError = "Unable to access shifts data feed.";
-                  }
-                },
-                formatDate(datetime = new Date()) {
-                  return moment(datetime).format('dddd[, ]MMMM Do YYYY')
-                },
-                formatTime(datetime) {
-                  return moment(datetime).utc().format('HH:mm')
-                },
-                endTime(start_datetime, duration) {
-                  return moment(start_datetime).add(duration, 's')
-                }
-              }
-            })
+					},
+					async fetchShifts() {
+						try {
+							const response = await fetch('/stats/export_rotas.json');
+							if (!response.ok)
+								throw new Error(response.statusText);
+							const json = await response.json();
+							shifts = json['shifts'];
+							//Sort the JSON by time, then put leaders before day/night shift
+							const rolePriority = {
+								"Leader": 1,
+								"Day Shift": 2,
+								"Night Shift": 2
+							};
+							shifts.sort((a, b) => {
+								//First by date/time
+								if (a.start_datetime !== b.start_datetime) {
+									return a.start_datetime.localeCompare(b.start_datetime);
+								}
+								//Then by role (the 'rota' field in the JSON)
+								return (rolePriority[a.rota] || 99) - (rolePriority[b.rota] || 99);
+							});
+							//Iterate through shifts and remove any that we don't want to show. Currently limited to:
+							//Prison & Prison Leader: Shift time isn't correct, fudged to fit on 3rings rota properly
+							//DoC & Gap Filler: Only appear on Monday/Tuesday respectively, no point putting on a daily list. Might add as a separate section later on.
+							for (let i = 0; i < shifts.length; i++) {
+								rota = shifts[i].rota;
+								if (rota == 'Cardiff Prison' || rota == 'Prison Leader' || rota == 'Director on Call'|| rota == 'Gap Filler') {
+									shifts.splice(i, 1);
+									i--;
+								}
+							}
+							//Iterate again, with the aim of finding the current leader
+							const now = new Date();
+							let currentLeader = null;
+							for (const shift of shifts) {
+								//Only consider leader shifts
+								if (shift.rota !== "leader") continue;
+								//Calculate the end time from the start + duration
+								const start = new Date(shift.start_datetime);
+								const end = new Date(start.getTime() + shift.duration * 1000);
+								//If now is between start & end, it's *probably* the right one...
+								if (!(start <= now && end >= now)) continue;
+								//EDGE CASE ALERT: Cardiff Central Outreach leader slot - does this leader shift have a matching outreach shift?
+								const hasMatchingOutreach = shifts.some(other =>
+									other.rota === "Cardiff Central Outreach" &&
+									other.start_datetime === shift.start_datetime &&
+									other.duration === shift.duration
+								);
+								//If it has a matching outreach shift, keep looking
+								if (hasMatchingOutreach) continue;
+								//If we've got this far, it's a leader shift that's currently running, and not the outreach one...close enough!
+								if (shift.volunteers.length){
+									const leaderName = shift.volunteers[0].name;
+									const startStr = moment(start).format("HH:mm");
+									const endStr = moment(end).format("HH:mm");
+									this.currentLeader = `${name} (${startStr} - ${endStr})`;
+								}
+								break;
+							}
+							this.shifts = json['shifts']
+							this.shiftsError = null;
+							this.shiftsLoading = false;
+						} catch (err) {
+							console.log(err);
+							this.shiftsError = "Unable to access shifts data feed.";
+						}
+					},
+					async fetchDirector() {
+						try {							
+							const start_date = moment.utc().subtract(7, 'days').format('YYYY-MM-DD');
+							const end_date = moment.utc().format('YYYY-MM-DD');
+							const response = await fetch(`/stats/export_rotas.json?start_date=${start_date}&end_date=${end_date}`);
+							if (!response.ok)
+							  throw new Error(response.statusText);
+							const json = await response.json();			
+							shifts = json['shifts'];
+							//Iterate backwards through the shifts, until the first "Director on Call" rota field is encountered
+							let directorOnCall = null;
+							for (let i = shifts.length - 1; i >= 0; i--) {
+								if (shifts[i].rota === "Director on Call") {
+									if (shifts[i].volunteers.length){
+										directorOnCall = shifts[i].volunteers[0].name;
+									} else {
+										//This shouldn't ever happen, but in the unlikely event the most recent DoC entry is empty, best to treat it as if it couldn't be found.
+										directorOnCall = null;
+									}
+									//Either way, stop searching
+									break;
+								}
+							}
+							if (directorOnCall !== null) {
+								this.docLoading = false;
+								this.directorOnCall = directorOnCall;
+							}
+						} catch (err) {
+							console.log(err);
+						}
+					},
+					formatDate(datetime = new Date()) {
+						return moment(datetime).format('dddd[, ]MMMM Do YYYY')
+					},
+					formatTime(datetime) {
+						return moment(datetime).utc().format('HH:mm')
+					},
+					endTime(start_datetime, duration) {
+						return moment(start_datetime).add(duration, 's')
+					}
+				}
+			})
 
-            app.mount('#app')
-        </script>
-    </body>
+			app.mount('#app')
+		</script>
+	</body>
 </html>
