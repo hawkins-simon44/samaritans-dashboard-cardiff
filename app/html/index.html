@@ -178,7 +178,8 @@
               },
               methods: {
                 fetchData() {
-                  this.fetchEvents();
+				  //Dashboard currently doesn't show events, so removing from the fetchData() method for now to save pointless api calls
+                  //this.fetchEvents();
                   this.fetchMessages();
                   this.fetchShifts();
                   document.getElementById('status').src = '/embed/status/';
