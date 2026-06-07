@@ -2,11 +2,16 @@ server {
 	listen 80 default_server;
 
 	root /var/www/html;
-
+	
 	location / {
 		ssi on;
 		set $ENV_SITE_NAME "$SITE_NAME";
 		try_files $uri $uri/ =404;
+	}
+	location = /analytics/screentime/ {
+		return 204;
+		access_log off;
+		log_not_found off;
 	}
 	location = /events.json {
 		proxy_set_header Authorization "APIKEY ${THREERINGS_APIKEY}";

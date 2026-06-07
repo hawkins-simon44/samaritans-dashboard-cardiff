@@ -219,7 +219,7 @@
                       throw new Error(response.statusText);
                     const json = await response.json();
                     shifts = json['shifts'];
-					//iterate through shifts and remove any that we don't want to see. Currently limited to:
+					//iterate through shifts and remove any that we don't want to show. Currently limited to:
 					//Prison & Prison Leader: Shift time isn't correct, fudged to fit on 3rings rota properly
 					//DoC & Gap Filler: Only appear on Monday/Tuesday respectively, no point putting on a daily list. Might add as a separate section later on.
 					for (let i = 0; i < shifts.length; i++) {
