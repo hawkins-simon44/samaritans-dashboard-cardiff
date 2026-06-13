@@ -4,21 +4,18 @@ services:
   app:
     build: ./app
     ports:
-      - "8080:80"
+      - '80'
     restart: always
-    environment:
-      THREERINGS_APIKEY: lqYxqI74XCyui3ECR7wttwtt
-      SITE_NAME: Cardiff (Development)
 
-#  browser:
-#    depends_on:
-#      - app
-#    environment:
-#      LAUNCH_URL: http://app/
-#      KIOSK: 1
-#      ENABLE_GPU: 0
-#    image: bh.cr/balenalabs/browser-aarch64
-#    ports:
-#      - '5011'
-#    privileged: true
-#    restart: always
+  browser:
+    depends_on:
+      - app
+    environment:
+      LAUNCH_URL: http://app/
+      KIOSK: 1
+      ENABLE_GPU: 0
+    image: bh.cr/balenalabs/browser-aarch64
+    ports:
+      - '5011'
+    privileged: true
+    restart: always
