@@ -112,15 +112,17 @@
 					<div style="padding-top: 20px">
 						<div class="uk-child-width-1-2 uk-grid-small uk-grid-match" uk-grid>
 							<div v-if="!docLoading">
-								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
+								<div class="uk-card uk-card-body uk-light" style="background: #8a79b5; box-shadow: 0 2px 8px rgba(0,0,0,0.15)">
 									<span class="connectors"></span>
 									<p class="uk-text-bold uk-margin-remove"><em style="font-style: normal;">Director on Call:</em></p>
-									<p class="uk-text-bold uk-margin-remove"><em style="font-style: normal;">{{ docTimes }}</em></p>
+									<template v-if="docTimes">
+										<p class="uk-text-bold uk-margin-remove"><em style="font-style: normal;">{{ docTimes }}</em></p>
+									</template>
 									<p class="uk-text-large uk-margin-remove">{{ directorOnCall }}</p>
 								</div>
 							</div>
 							<div v-if="!shiftsLoading">
-								<div class="uk-card uk-card-body uk-light" style="background: #72619f">
+								<div class="uk-card uk-card-body uk-light" style="background: #8a79b5; box-shadow: 0 2px 8px rgba(0,0,0,0.15)">
 									<span class="connectors"></span>
 									<p class="uk-text-bold uk-margin-remove"><em style="font-style: normal;">Current Leader:</em></p>
 									<p class="uk-text-bold uk-margin-remove"><em style="font-style: normal;">{{ leaderTimes }}</em></p>
@@ -324,26 +326,32 @@
 							let docLength = null;
 							for (let i = shifts.length - 1; i >= 0; i--) {
 								if (shifts[i].rota === "Director on Call") {
+									//EDGE CASE: If DoC shift doesn't start at midnight, it's almost certainly a single shift, but 
+									//revert to 'check 3Rings' to be on the safe side
+									const start = moment(shifts[i].start_datetime.replace('Z', ''));
+									const isMidnight = start.hour() === 0 && start.minute() === 0;
+									if (!isMidnight){
+										break;
+									}
+									
+									//Populate the DoC card with the volunteer name and title. In the unlikely event the vol name is blank, it'll revert to the failsafe
 									if (shifts[i].volunteers.length){
 										directorOnCall = shifts[i].volunteers[0].name;
 										docLength = shifts[i].title;
-									} else {
-										//This shouldn't ever happen, but in the unlikely event the most recent DoC entry is empty, best to treat it as if it couldn't be found.
-										directorOnCall = null;
 									}
-									//Either way, stop searching
+									//Stop searching, as we don't want to overwrite null and stop the failsafe message
 									break;
 								}
 							}
-							if (directorOnCall !== null) {
-								this.docLoading = false;
+							//Output the DoC and title (or failsafe values) to the page data
+							if (directorOnCall) {
 								this.directorOnCall = directorOnCall;
 								this.docTimes = `(${docLength})`;
 							} else {
-								this.docLoading = false;
-								this.directorOnCall = 'None found';
-								this.docTimes = 'Check 3rings';
+								this.directorOnCall = 'Check 3Rings';
+								this.docTimes = null;
 							}
+							this.docLoading = false;
 						} catch (err) {
 							console.log(err);
 						}
