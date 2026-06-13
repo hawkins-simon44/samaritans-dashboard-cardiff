@@ -179,7 +179,7 @@
 				}
 			});
 
-			const refreshIntervalInMinutes = 2;
+			const refreshIntervalInMinutes = 1;
 			const app = Vue.createApp({
 				data() {
 					return {
@@ -199,7 +199,12 @@
 				},
 				created() {
 					this.fetchData();
+					//Refresh the data every 'refreshIntervalInMinutes'
 					setInterval(this.fetchData, refreshIntervalInMinutes * 1000 * 60);
+					// Force full reload every 10 minutes
+					setInterval(() => {
+						window.location.reload();
+					}, 10 * 60 * 1000);
 				},
 				methods: {
 					fetchData() {
@@ -240,7 +245,9 @@
 					},
 					async fetchShifts() {
 						try {
-							const response = await fetch('/stats/export_rotas.json');
+							const response = await fetch('/stats/export_rotas.json', {
+								cache: "no-store"
+							});
 							if (!response.ok)
 								throw new Error(response.statusText);
 							const json = await response.json();
@@ -316,7 +323,9 @@
 						try {							
 							const start_date = moment().subtract(7, 'days').format('YYYY-MM-DD');
 							const end_date = moment().format('YYYY-MM-DD');
-							const response = await fetch(`/stats/export_rotas.json?start_date=${start_date}&end_date=${end_date}`);
+							const response = await fetch(`/stats/export_rotas.json?start_date=${start_date}&end_date=${end_date}`, {
+								cache: "no-store"
+							});
 							if (!response.ok)
 							  throw new Error(response.statusText);
 							const json = await response.json();			
